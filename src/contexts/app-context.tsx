@@ -1,6 +1,6 @@
 'use client'
 
-import React, { createContext, useContext, useState, ReactNode } from 'react'
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react'
 
 export type Theme = 'light' | 'dark'
 export type Language = 'pt-BR' | 'en-US'
@@ -25,11 +25,41 @@ interface AppProviderProps {
 }
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>('light')
+  const [theme, setThemeState] = useState<Theme>('light')
   const [language, setLanguage] = useState<Language>('pt-BR')
   const [itemsPerPage, setItemsPerPage] = useState<number>(10)
   const [dateFormat, setDateFormat] = useState<string>('dd/MM/yyyy')
   const [currencyFormat, setCurrencyFormat] = useState<string>('pt-BR')
+
+  useEffect(() => {
+    try {
+      const stored = typeof window !== 'undefined' ? window.localStorage.getItem('theme') as Theme | null : null
+      if (stored === 'dark' || stored === 'light') {
+        setThemeState(stored)
+      } else if (typeof window !== 'undefined') {
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        setThemeState(prefersDark ? 'dark' : 'light')
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement
+      if (theme === 'dark') {
+        root.classList.add('dark')
+      } else {
+        root.classList.remove('dark')
+      }
+    }
+  }, [theme])
+
+  const setTheme = (t: Theme) => {
+    setThemeState(t)
+    try {
+      if (typeof window !== 'undefined') window.localStorage.setItem('theme', t)
+    } catch {}
+  }
 
   const value: AppContextType = {
     theme,

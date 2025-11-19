@@ -24,7 +24,7 @@ export function Dialog({ open, onOpenChange, title, size = 'md', actions, childr
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
         <DialogPrimitive.Content className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className={`relative bg-white rounded-lg shadow-lg w-full ${sizeClass} p-6`}>
+          <div className={`relative bg-card rounded-lg shadow-lg w-full ${sizeClass} p-6`}>
             <div className="flex justify-between items-center mb-4">
               {title ? (
                 <DialogPrimitive.Title className="text-xl font-semibold">{title}</DialogPrimitive.Title>

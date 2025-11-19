@@ -16,11 +16,11 @@ export function StatCard({ title, value, icon, delta }: StatCardProps) {
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm text-gray-500">{title}</div>
+            <div className="text-sm text-muted-foreground">{title}</div>
             <div className="text-2xl font-semibold">{value}</div>
-            {delta && <div className="text-xs text-gray-400 mt-1">{delta}</div>}
+            {delta && <div className="text-xs text-muted-foreground mt-1">{delta}</div>}
           </div>
-          {icon && <div className="text-gray-400">{icon}</div>}
+          {icon && <div className="text-muted-foreground">{icon}</div>}
         </div>
       </CardContent>
     </Card>

@@ -37,7 +37,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="w-full max-w-md">
         <Card>
           <CardHeader className="space-y-1">
@@ -89,7 +89,7 @@ export default function LoginPage() {
             </form>
             
             <div className="mt-4 text-center text-sm">
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 Admin padrão: contabiljaque.admin@gmail.com / admin123
               </p>
             </div>

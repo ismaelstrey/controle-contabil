@@ -38,7 +38,13 @@ export function MonthlyServiceForm({ onSuccess, serviceId, initialValues }: Prop
     <form onSubmit={onSubmit} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="client">Cliente</Label>
-        <select id="client" className="w-full border rounded-md h-10 px-3" value={clientId} onChange={(e) => setClientId(e.target.value)} required>
+        <select
+          id="client"
+          className="h-10 w-full rounded-md border border-input bg-background px-3 text-base focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ring-offset-background disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+          value={clientId}
+          onChange={(e) => setClientId(e.target.value)}
+          required
+        >
           <option value="">Selecione um cliente</option>
           {clients.map(c => (
             <option key={c.id} value={c.id}>{c.name}</option>

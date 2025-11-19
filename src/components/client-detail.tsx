@@ -16,8 +16,8 @@ export function ClientDetail({ clientId }: ClientDetailProps) {
     <div className="space-y-4">
       <div className="rounded-md border p-4">
         <h2 className="text-xl font-semibold">{client.name}</h2>
-        <p className="text-sm text-gray-600">{client.email}</p>
-        <p className="text-sm text-gray-600">{client.cpf_cnpj}</p>
+        <p className="text-sm text-muted-foreground">{client.email}</p>
+        <p className="text-sm text-muted-foreground">{client.cpf_cnpj}</p>
       </div>
     </div>
   )

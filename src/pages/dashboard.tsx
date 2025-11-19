@@ -95,7 +95,7 @@ export default function DashboardPage() {
         </div>
 
         <Tabs defaultValue="clients">
-          <TabsList className="bg-white/60">
+          <TabsList className="bg-card/60">
             <TabsTrigger value="clients" tone="green">
               <Users className="mr-2 h-4 w-4" />
               Clientes
@@ -118,8 +118,8 @@ export default function DashboardPage() {
             </TabsTrigger>
           </TabsList>
           <TabsContent value="clients">
-            <div className="rounded-lg border bg-white">
-              <div className="px-4 py-3 border-b bg-green-50 text-sm text-green-700 flex items-center justify-between">
+            <div className="rounded-lg border bg-card">
+              <div className="px-4 py-3 border-b bg-muted text-sm text-muted-foreground flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>Clientes</span>
                   <span className="inline-flex items-center rounded-full bg-green-100 text-green-700 px-2 py-0.5 text-xs font-medium">{clients.length}</span>
@@ -132,8 +132,8 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           <TabsContent value="monthly">
-            <div className="rounded-lg border bg-white">
-              <div className="px-4 py-3 border-b bg-indigo-50 text-sm text-indigo-700 flex items-center justify-between">
+            <div className="rounded-lg border bg-card">
+              <div className="px-4 py-3 border-b bg-muted text-sm text-muted-foreground flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>Serviços Mensais</span>
                   <span className="inline-flex items-center rounded-full bg-indigo-100 text-indigo-700 px-2 py-0.5 text-xs font-medium">{monthly.length}</span>
@@ -146,8 +146,8 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           <TabsContent value="annual">
-            <div className="rounded-lg border bg-white">
-              <div className="px-4 py-3 border-b bg-amber-50 text-sm text-amber-700 flex items-center justify-between">
+            <div className="rounded-lg border bg-card">
+              <div className="px-4 py-3 border-b bg-muted text-sm text-muted-foreground flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>Serviços Anuais</span>
                   <span className="inline-flex items-center rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-xs font-medium">{annual.length}</span>
@@ -160,8 +160,8 @@ export default function DashboardPage() {
             </div>
           </TabsContent>
           <TabsContent value="irpf">
-            <div className="rounded-lg border bg-white">
-              <div className="px-4 py-3 border-b bg-violet-50 text-sm text-violet-700 flex items-center justify-between">
+            <div className="rounded-lg border bg-card">
+              <div className="px-4 py-3 border-b bg-muted text-sm text-muted-foreground flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span>IRPF</span>
                   <span className="inline-flex items-center rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-xs font-medium">{irpf.length}</span>

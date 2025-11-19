@@ -15,7 +15,7 @@ export function OverviewChart({ title, data, color = '#6366F1' }: OverviewChartP
     <Card>
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <div className="text-sm text-gray-500">{title}</div>
+          <div className="text-sm text-muted-foreground">{title}</div>
         </div>
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">

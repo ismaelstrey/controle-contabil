@@ -68,7 +68,7 @@ export function TabsTrigger({ value, tone = 'indigo', className, children, ...pr
       onClick={() => ctx.setValue(value)}
       className={cn(
         'group px-4 py-2 text-sm transition-colors',
-        active ? `border-b-2 ${toneClasses.active}` : `text-gray-600 hover:border-b-2 ${toneClasses.hover}`,
+        active ? `border-b-2 ${toneClasses.active}` : `text-muted-foreground hover:border-b-2 ${toneClasses.hover}`,
         className
       )}
       {...props}

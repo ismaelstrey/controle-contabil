@@ -16,10 +16,10 @@ const HomePage: NextPage = () => {
   }, [router])
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="flex items-center justify-center min-h-screen bg-background">
       <div className="text-center space-y-6">
-        <h1 className="text-4xl font-bold text-gray-900">ContabilJaque</h1>
-        <p className="text-lg text-gray-600">Sistema de Controle de Clientes</p>
+        <h1 className="text-4xl font-bold text-foreground">ContabilJaque</h1>
+        <p className="text-lg text-muted-foreground">Sistema de Controle de Clientes</p>
         <div className="space-x-4">
           <Link 
             href="/login" 
@@ -34,7 +34,7 @@ const HomePage: NextPage = () => {
             Dashboard
           </Link>
         </div>
-        <p className="text-sm text-gray-500">Redirecionando para login...</p>
+        <p className="text-sm text-muted-foreground">Redirecionando para login...</p>
       </div>
     </div>
   )

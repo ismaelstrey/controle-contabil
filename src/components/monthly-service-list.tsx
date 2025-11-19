@@ -25,7 +25,7 @@ export function MonthlyServiceList() {
       </div>
       <div className="rounded-md border">
         <table className="w-full text-sm">
-          <thead className="bg-gray-50">
+          <thead className="bg-muted">
             <tr>
               <th className="px-4 py-2 text-left">Cliente</th>
               <th className="px-4 py-2 text-left">Tipo de Guia</th>

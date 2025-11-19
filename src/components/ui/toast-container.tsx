@@ -12,10 +12,10 @@ const toastIcons = {
 }
 
 const toastColors = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  warning: 'bg-yellow-50 border-yellow-200 text-yellow-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800'
+  success: 'bg-card text-foreground border-l-2 border-green-500',
+  error: 'bg-card text-foreground border-l-2 border-red-500',
+  warning: 'bg-card text-foreground border-l-2 border-yellow-500',
+  info: 'bg-card text-foreground border-l-2 border-blue-500'
 }
 
 export function ToastContainer() {
@@ -49,7 +49,7 @@ export function ToastContainer() {
             </div>
             <button
               onClick={() => remove(toast.id)}
-              className="ml-3 p-1 rounded-full hover:bg-black hover:bg-opacity-10"
+              className="ml-3 p-1 rounded-full hover:bg-foreground/10"
             >
               <X className="w-4 h-4" />
             </button>
