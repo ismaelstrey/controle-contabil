@@ -5,27 +5,32 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 
-interface Props { onSuccess?: () => void }
-export function MonthlyServiceForm({ onSuccess }: Props) {
-  const { createMonthlyService } = useMonthlyServices()
+interface Props { onSuccess?: () => void; serviceId?: string; initialValues?: { clientId?: string; tipoGuia?: string; regularizacao?: string; situacao?: string; referenceMonth?: string } }
+export function MonthlyServiceForm({ onSuccess, serviceId, initialValues }: Props) {
+  const { createMonthlyService, updateMonthlyService } = useMonthlyServices()
   const { clients } = useClients()
-  const [clientId, setClientId] = useState('')
-  const [tipoGuia, setTipoGuia] = useState('')
-  const [regularizacao, setRegularizacao] = useState('')
-  const [situacao, setSituacao] = useState('')
-  const [referenceMonth, setReferenceMonth] = useState('')
+  const [clientId, setClientId] = useState(initialValues?.clientId ?? '')
+  const [tipoGuia, setTipoGuia] = useState(initialValues?.tipoGuia ?? '')
+  const [regularizacao, setRegularizacao] = useState(initialValues?.regularizacao ?? '')
+  const [situacao, setSituacao] = useState(initialValues?.situacao ?? '')
+  const [referenceMonth, setReferenceMonth] = useState(initialValues?.referenceMonth ?? '')
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await createMonthlyService({ clientId, tipoGuia, regularizacao, situacao, referenceMonth })
-    setClientId('')
-    setTipoGuia('')
-    setRegularizacao('')
-    setSituacao('')
-    setReferenceMonth('')
-    onSuccess?.()
+    if (serviceId) {
+      await updateMonthlyService(serviceId, { clientId, tipoGuia, regularizacao, situacao, referenceMonth })
+      onSuccess?.()
+    } else {
+      await createMonthlyService({ clientId, tipoGuia, regularizacao, situacao, referenceMonth })
+      setClientId('')
+      setTipoGuia('')
+      setRegularizacao('')
+      setSituacao('')
+      setReferenceMonth('')
+      onSuccess?.()
+    }
     setLoading(false)
   }
 
@@ -56,7 +61,7 @@ export function MonthlyServiceForm({ onSuccess }: Props) {
         <Label htmlFor="ref">Mês de Referência (YYYY-MM)</Label>
         <Input id="ref" value={referenceMonth} onChange={(e) => setReferenceMonth(e.target.value)} placeholder="2025-03" />
       </div>
-      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : 'Salvar'}</Button>
+      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : serviceId ? 'Atualizar' : 'Salvar'}</Button>
     </form>
   )
 }

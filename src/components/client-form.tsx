@@ -7,26 +7,37 @@ import { useToastContext } from '@/contexts/toast-context'
 
 interface ClientFormProps {
   onSuccess?: () => void
+  clientId?: string
+  initialValues?: {
+    name?: string
+    email?: string
+    cpf_cnpj?: string
+  }
 }
 
-export function ClientForm({ onSuccess }: ClientFormProps) {
-  const { createClient } = useClients()
+export function ClientForm({ onSuccess, clientId, initialValues }: ClientFormProps) {
+  const { createClient, updateClient } = useClients()
   const { show } = useToastContext()
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [cpfCnpj, setCpfCnpj] = useState('')
+  const [name, setName] = useState(initialValues?.name ?? '')
+  const [email, setEmail] = useState(initialValues?.email ?? '')
+  const [cpfCnpj, setCpfCnpj] = useState(initialValues?.cpf_cnpj ?? '')
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setLoading(true)
     try {
-      await createClient({ name, email, cpf_cnpj: cpfCnpj })
-      show('Cliente criado!', 'success')
-      setName('')
-      setEmail('')
-      setCpfCnpj('')
-      onSuccess?.()
+      if (clientId) {
+        await updateClient(clientId, { name, email, cpf_cnpj: cpfCnpj })
+        onSuccess?.()
+      } else {
+        await createClient({ name, email, cpf_cnpj: cpfCnpj })
+        show('Cliente criado!', 'success')
+        setName('')
+        setEmail('')
+        setCpfCnpj('')
+        onSuccess?.()
+      }
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Erro ao criar cliente'
       show(msg, 'error')
@@ -49,7 +60,7 @@ export function ClientForm({ onSuccess }: ClientFormProps) {
         <Label htmlFor="cpf">CPF/CNPJ</Label>
         <Input id="cpf" value={cpfCnpj} onChange={(e) => setCpfCnpj(e.target.value)} />
       </div>
-      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : 'Salvar'}</Button>
+      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : clientId ? 'Atualizar' : 'Salvar'}</Button>
     </form>
   )
 }

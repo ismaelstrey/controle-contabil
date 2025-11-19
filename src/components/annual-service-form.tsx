@@ -5,25 +5,30 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 
-interface Props { onSuccess?: () => void }
-export function AnnualServiceForm({ onSuccess }: Props) {
-  const { createAnnualService } = useAnnualServices()
+interface Props { onSuccess?: () => void; serviceId?: string; initialValues?: { clientId?: string; type?: string; observation?: string; year?: number } }
+export function AnnualServiceForm({ onSuccess, serviceId, initialValues }: Props) {
+  const { createAnnualService, updateAnnualService } = useAnnualServices()
   const { clients } = useClients()
-  const [clientId, setClientId] = useState('')
-  const [type, setType] = useState('')
-  const [observation, setObservation] = useState('')
-  const [year, setYear] = useState('')
+  const [clientId, setClientId] = useState(initialValues?.clientId ?? '')
+  const [type, setType] = useState(initialValues?.type ?? '')
+  const [observation, setObservation] = useState(initialValues?.observation ?? '')
+  const [year, setYear] = useState(initialValues?.year ? String(initialValues.year) : '')
   const [loading, setLoading] = useState(false)
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    await createAnnualService({ clientId, type, observation, year: year ? Number(year) : undefined })
-    setClientId('')
-    setType('')
-    setObservation('')
-    setYear('')
-    onSuccess?.()
+    if (serviceId) {
+      await updateAnnualService(serviceId, { clientId, type, observation, year: year ? Number(year) : undefined })
+      onSuccess?.()
+    } else {
+      await createAnnualService({ clientId, type, observation, year: year ? Number(year) : undefined })
+      setClientId('')
+      setType('')
+      setObservation('')
+      setYear('')
+      onSuccess?.()
+    }
     setLoading(false)
   }
 
@@ -50,7 +55,7 @@ export function AnnualServiceForm({ onSuccess }: Props) {
         <Label htmlFor="year">Ano</Label>
         <Input id="year" type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="2025" />
       </div>
-      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : 'Salvar'}</Button>
+      <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : serviceId ? 'Atualizar' : 'Salvar'}</Button>
     </form>
   )
 }

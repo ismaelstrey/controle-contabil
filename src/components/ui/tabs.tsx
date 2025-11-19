@@ -35,7 +35,7 @@ export function TabsList({ className, children }: React.HTMLAttributes<HTMLDivEl
 
 interface TabsTriggerProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   value: string
-  tone?: 'green' | 'indigo' | 'amber'
+  tone?: 'green' | 'indigo' | 'amber' | 'tomato'
 }
 
 export function TabsTrigger({ value, tone = 'indigo', className, children, ...props }: TabsTriggerProps) {
@@ -54,6 +54,10 @@ export function TabsTrigger({ value, tone = 'indigo', className, children, ...pr
     amber: {
       active: 'border-amber-600 text-amber-600',
       hover: 'hover:text-amber-700 hover:border-amber-600'
+    },
+    tomato: {
+      active: 'border-tomato-600 text-tomato-600',
+      hover: 'hover:text-tomato-700 hover:border-tomato-600'
     }
   }[tone]
   return (

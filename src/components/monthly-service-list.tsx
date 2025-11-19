@@ -2,10 +2,15 @@ import { useMonthlyServices } from '@/hooks/use-monthly-services'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Dialog } from '@/components/ui/dialog'
+import { MonthlyServiceForm } from '@/components/monthly-service-form'
 
 export function MonthlyServiceList() {
   const [search, setSearch] = useState('')
-  const { services, loading, error } = useMonthlyServices({ search })
+  const { services, loading, error, deleteMonthlyService } = useMonthlyServices({ search })
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const serviceToEdit = editingId ? services.find((s: any) => s.id === editingId) : null
 
   if (loading) return <div className="py-10 text-center">Carregando...</div>
   if (error) return <div className="py-10 text-center text-red-600">{error}</div>
@@ -27,6 +32,7 @@ export function MonthlyServiceList() {
               <th className="px-4 py-2 text-left">Regularização</th>
               <th className="px-4 py-2 text-left">Situação</th>
               <th className="px-4 py-2 text-left">Referência</th>
+              <th className="px-4 py-2 text-left">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -37,11 +43,34 @@ export function MonthlyServiceList() {
                 <td className="px-4 py-2">{s.regularizacao || '-'}</td>
                 <td className="px-4 py-2">{s.situacao || '-'}</td>
                 <td className="px-4 py-2">{s.referenceMonth || '-'}</td>
+                <td className="px-4 py-2 flex gap-2">
+                  <Button size="sm" onClick={() => setEditingId(s.id)}>Editar</Button>
+                  <Button variant="secondary" size="sm" onClick={() => deleteMonthlyService(s.id)}>Remover</Button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      <Dialog
+        open={Boolean(editingId && serviceToEdit)}
+        onOpenChange={(o) => { if (!o) setEditingId(null) }}
+        title="Editar Serviço Mensal"
+      >
+        {serviceToEdit && (
+          <MonthlyServiceForm
+            serviceId={serviceToEdit.id}
+            initialValues={{
+              clientId: serviceToEdit.clientId || serviceToEdit.client?.id || '',
+              tipoGuia: serviceToEdit.tipoGuia,
+              regularizacao: serviceToEdit.regularizacao,
+              situacao: serviceToEdit.situacao,
+              referenceMonth: serviceToEdit.referenceMonth,
+            }}
+            onSuccess={() => setEditingId(null)}
+          />
+        )}
+      </Dialog>
     </div>
   )
 }

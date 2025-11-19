@@ -1,9 +1,13 @@
-import Link from 'next/link'
+import { useState } from 'react'
 import { useClients } from '@/hooks/use-clients'
 import { Button } from '@/components/ui/button'
+import { ClientForm } from '@/components/client-form'
+import { Dialog } from '@/components/ui/dialog'
 
 export function ClientList() {
   const { clients, loading, error, deleteClient } = useClients()
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const clientToEdit = editingId ? clients.find((cl) => cl.id === editingId) : null
 
   if (loading) {
     return <div className="py-10 text-center">Carregando...</div>
@@ -29,13 +33,28 @@ export function ClientList() {
               <td className="px-4 py-2">{c.name}</td>
               <td className="px-4 py-2">{c.email}</td>
               <td className="px-4 py-2 flex gap-2">
-                <Link href={`/clients/${c.id}`} className="underline">Detalhes</Link>
-                <Button variant="secondary" onClick={() => deleteClient(c.id)}>Remover</Button>
+                <Button size="sm" onClick={() => setEditingId(c.id)}>Editar</Button>
+                <Button variant="secondary" size="sm" onClick={() => deleteClient(c.id)}>Remover</Button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <Dialog
+        open={Boolean(editingId && clientToEdit)}
+        onOpenChange={(o) => {
+          if (!o) setEditingId(null)
+        }}
+        title="Editar Cliente"
+      >
+        {clientToEdit && (
+          <ClientForm
+            clientId={clientToEdit.id}
+            initialValues={{ name: clientToEdit.name, email: clientToEdit.email, cpf_cnpj: clientToEdit.cpf_cnpj }}
+            onSuccess={() => setEditingId(null)}
+          />
+        )}
+      </Dialog>
     </div>
   )
 }

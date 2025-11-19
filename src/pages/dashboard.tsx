@@ -8,7 +8,6 @@ import { MonthlyServiceForm } from '@/components/monthly-service-form'
 import { AnnualServiceList } from '@/components/annual-service-list'
 import { AnnualServiceForm } from '@/components/annual-service-form'
 import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
 import { ClientForm } from '@/components/client-form'
 import { StatCard } from '@/components/stat-card'
 import { OverviewChart } from '@/components/overview-chart'
@@ -17,7 +16,10 @@ import { useMonthlyServices } from '@/hooks/use-monthly-services'
 import { useAnnualServices } from '@/hooks/use-annual-services'
 import { useIrpfServices } from '@/hooks/use-irpf-services'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Users, Calendar, CalendarRange } from 'lucide-react'
+import { Dialog } from '@/components/ui/dialog'
+import { IrpfServiceList } from '@/components/irpf-service-list'
+import { IrpfServiceForm } from '@/components/irpf-service-form'
+import { Users, Calendar, CalendarRange, FileText } from 'lucide-react'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -25,6 +27,7 @@ export default function DashboardPage() {
   const [open, setOpen] = useState(false)
   const [openMonthly, setOpenMonthly] = useState(false)
   const [openAnnual, setOpenAnnual] = useState(false)
+  const [openIrpf, setOpenIrpf] = useState(false)
   const { clients } = useClients()
   const { services: monthly } = useMonthlyServices()
   const { services: annual } = useAnnualServices()
@@ -76,21 +79,7 @@ export default function DashboardPage() {
     <DashboardLayout>
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Dashboard</h1>
-          <div className="flex items-center gap-2">
-            <Button onClick={() => setOpenMonthly(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Serviço Mensal
-            </Button>
-            <Button onClick={() => setOpenAnnual(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Serviço Anual
-            </Button>
-            <Button onClick={() => setOpen(true)}>
-              <Plus className="mr-2 h-4 w-4" />
-              Novo Cliente
-            </Button>
-          </div>
+          <h1 className="text-3xl font-bold">Dashboard</h1>         
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
@@ -121,6 +110,11 @@ export default function DashboardPage() {
               <CalendarRange className="mr-2 h-4 w-4" />
               Serviços Anuais
               <span className="ml-2 inline-flex items-center rounded-full bg-amber-100 text-amber-700 px-2 py-0.5 text-xs font-medium border border-amber-200 group-hover:bg-amber-200 group-hover:text-amber-800">{annual.length}</span>
+            </TabsTrigger>
+            <TabsTrigger value="irpf" tone="tomato">
+              <FileText className="mr-2 h-4 w-4" />
+              IRPF
+              <span className="ml-2 inline-flex items-center rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-xs font-medium border border-violet-200 group-hover:bg-violet-200 group-hover:text-violet-800">{irpf.length}</span>
             </TabsTrigger>
           </TabsList>
           <TabsContent value="clients">
@@ -165,44 +159,34 @@ export default function DashboardPage() {
               </div>
             </div>
           </TabsContent>
+          <TabsContent value="irpf">
+            <div className="rounded-lg border bg-white">
+              <div className="px-4 py-3 border-b bg-violet-50 text-sm text-violet-700 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span>IRPF</span>
+                  <span className="inline-flex items-center rounded-full bg-violet-100 text-violet-700 px-2 py-0.5 text-xs font-medium">{irpf.length}</span>
+                </div>
+                <Button size="sm" onClick={() => setOpenIrpf(true)}>Nova Entrada</Button>
+              </div>
+              <div className="max-h-[420px] overflow-auto p-4">
+                <IrpfServiceList />
+              </div>
+            </div>
+          </TabsContent>
         </Tabs>
       </div>
-      {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpen(false)}></div>
-          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Novo Cliente</h2>
-              <Button variant="secondary" onClick={() => setOpen(false)}>Fechar</Button>
-            </div>
-            <ClientForm onSuccess={() => setOpen(false)} />
-          </div>
-        </div>
-      )}
-      {openMonthly && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpenMonthly(false)}></div>
-          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Novo Serviço Mensal</h2>
-              <Button variant="secondary" onClick={() => setOpenMonthly(false)}>Fechar</Button>
-            </div>
-            <MonthlyServiceForm onSuccess={() => setOpenMonthly(false)} />
-          </div>
-        </div>
-      )}
-      {openAnnual && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setOpenAnnual(false)}></div>
-          <div className="relative bg-white rounded-lg shadow-lg w-full max-w-lg p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold">Novo Serviço Anual</h2>
-              <Button variant="secondary" onClick={() => setOpenAnnual(false)}>Fechar</Button>
-            </div>
-            <AnnualServiceForm onSuccess={() => setOpenAnnual(false)} />
-          </div>
-        </div>
-      )}
+      <Dialog open={open} onOpenChange={setOpen} title="Novo Cliente">
+        <ClientForm onSuccess={() => setOpen(false)} />
+      </Dialog>
+      <Dialog open={openMonthly} onOpenChange={setOpenMonthly} title="Novo Serviço Mensal">
+        <MonthlyServiceForm onSuccess={() => setOpenMonthly(false)} />
+      </Dialog>
+      <Dialog open={openAnnual} onOpenChange={setOpenAnnual} title="Novo Serviço Anual">
+        <AnnualServiceForm onSuccess={() => setOpenAnnual(false)} />
+      </Dialog>
+      <Dialog open={openIrpf} onOpenChange={setOpenIrpf} title="Nova Entrada IRPF">
+        <IrpfServiceForm onSuccess={() => setOpenIrpf(false)} />
+      </Dialog>
     </DashboardLayout>
   )
 }
