@@ -1,14 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
-import fs from 'fs'
-import path from 'path'
-
-function getUploadDir() {
-  const base = process.env.UPLOAD_DIR || './uploads'
-  const abs = path.isAbsolute(base) ? base : path.join(process.cwd(), base)
-  if (!fs.existsSync(abs)) fs.mkdirSync(abs, { recursive: true })
-  return abs
-}
+import { storageSave } from '@/lib/storage'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
@@ -31,19 +23,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       res.status(404).json({ error: 'Cliente não encontrado' })
       return
     }
-    const dir = getUploadDir()
-    const subdir = path.join(dir, String(clientId))
-    if (!fs.existsSync(subdir)) fs.mkdirSync(subdir, { recursive: true })
-    const safeName = `${Date.now()}_${fileName}`
-    const filePath = path.join(subdir, safeName)
     const buffer = Buffer.from(String(dataBase64), 'base64')
-    fs.writeFileSync(filePath, buffer)
-    const relPath = path.relative(process.cwd(), filePath)
+    const saved = await storageSave(String(clientId), fileName, buffer, fileType)
     const created = await prisma.document.create({
       data: {
         clientId: String(clientId),
         fileName,
-        fileUrl: relPath,
+        fileUrl: saved.url,
         fileType,
         fileSize: Number(fileSize)
       }

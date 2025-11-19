@@ -1,8 +1,18 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
 import { normalizeCnpj, parseCurrencyBR, parseDateBR } from '@/lib/company-utils'
+let Ratelimit: any = null
+let Redis: any = null
+try {
+  Ratelimit = require('@upstash/ratelimit').Ratelimit
+  Redis = require('@upstash/redis').Redis
+} catch {}
 
 const rateMap: Record<string, number[]> = {}
+const redisUrl = process.env.UPSTASH_REDIS_REST_URL
+const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN
+const redis = redisUrl && redisToken && Redis ? new Redis({ url: redisUrl, token: redisToken }) : null
+const ratelimit = redis && Ratelimit ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '1 m') }) : null
 
 function getSessionId(req: NextApiRequest): string | null {
   const cookie = req.headers.cookie || ''
@@ -11,7 +21,11 @@ function getSessionId(req: NextApiRequest): string | null {
   return match.substring('session='.length)
 }
 
-function rateLimitOk(userId: string, limit = 5, windowMs = 60_000): boolean {
+async function rateLimitOk(userId: string, limit = 5, windowMs = 60_000): Promise<boolean> {
+  if (ratelimit) {
+    const { success } = await ratelimit.limit(`sync-das:${userId}`)
+    return success
+  }
   const now = Date.now()
   const arr = rateMap[userId] || []
   const recent = arr.filter(ts => now - ts < windowMs)
@@ -50,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     res.status(401).json({ error: 'Não autenticado' })
     return
   }
-  if (!rateLimitOk(userId)) {
+  if (!(await rateLimitOk(userId))) {
     res.status(429).json({ error: 'Muitas solicitações. Tente novamente em instantes.' })
     return
   }

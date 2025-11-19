@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
-import fs from 'fs'
 import path from 'path'
+import { storageDelete, storageIsRemote, storageReadLocal } from '@/lib/storage'
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const id = String(req.query.id)
@@ -12,12 +12,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'GET') {
-    const absPath = path.isAbsolute(doc.fileUrl) ? doc.fileUrl : path.join(process.cwd(), doc.fileUrl)
-    if (!fs.existsSync(absPath)) {
+    if (storageIsRemote(doc.fileUrl)) {
+      res.setHeader('Content-Disposition', `attachment; filename="${doc.fileName}"`)
+      res.status(302).setHeader('Location', doc.fileUrl)
+      res.end()
+      return
+    }
+    const buffer = storageReadLocal(doc.fileUrl)
+    if (!buffer) {
       res.status(404).json({ error: 'Arquivo não encontrado' })
       return
     }
-    const buffer = fs.readFileSync(absPath)
     res.setHeader('Content-Type', doc.fileType)
     res.setHeader('Content-Disposition', `attachment; filename="${doc.fileName}"`)
     res.status(200).send(buffer)
@@ -25,10 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'DELETE') {
-    const absPath = path.isAbsolute(doc.fileUrl) ? doc.fileUrl : path.join(process.cwd(), doc.fileUrl)
-    try {
-      if (fs.existsSync(absPath)) fs.unlinkSync(absPath)
-    } catch {}
+    await storageDelete(doc.fileUrl)
     await prisma.document.delete({ where: { id } })
     res.status(204).end()
     return
