@@ -17,6 +17,7 @@ model User {
   updatedAt DateTime  @updatedAt @map("updated_at")
   
   clients   Client[]
+  companies Company[]
   
   @@map("users")
 }
@@ -117,4 +118,77 @@ enum Role {
 enum Status {
   ACTIVE
   INACTIVE
+}
+
+enum CompanyType {
+  MEI
+  EI
+  LTDA
+  SLU
+  SA
+  SociedadeSimples
+  Cooperativa
+}
+
+enum CompanyPorte {
+  ME
+  EPP
+  Media
+  Grande
+}
+
+enum RegimeTributario {
+  SimplesNacional
+  LucroPresumido
+  LucroReal
+}
+
+model Company {
+  id              String          @id @default(uuid())
+  userId          String          @map("user_id")
+  cnpj            String          @unique
+  razaoSocial     String?
+  tipoEmpresa     CompanyType?
+  porte           CompanyPorte?
+  regimeTributario RegimeTributario?
+  cnaePrincipal   String?
+  createdAt       DateTime        @default(now()) @map("created_at")
+  updatedAt       DateTime        @updatedAt @map("updated_at")
+  lastSyncAt      DateTime?       @map("last_sync_at")
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dasPeriods DasPeriod[]
+
+  @@index([userId])
+  @@map("companies")
+}
+
+model DasPeriod {
+  id               String   @id @default(uuid())
+  companyId        String   @map("company_id")
+  periodo          String
+  situacao         String?
+  apurado          String?
+  principal        Float?
+  multas           Float?
+  juros            Float?
+  total            Float?
+  dataVencimento   DateTime? @map("data_vencimento")
+  dataAcolhimento  DateTime? @map("data_acolhimento")
+  dataPagamento    DateTime? @map("data_pagamento")
+  icms             Float?
+  iss              Float?
+  inss             Float?
+  numeroApuracao   String?
+  numeroDas        String?
+  codigoBarras     String?  @map("codigo_barras")
+  urlDas           String?  @map("url_das")
+  mensagem         String?
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@unique([companyId, periodo])
+  @@map("das_periods")
 }
