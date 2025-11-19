@@ -1,0 +1,120 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  name      String
+  passwordHash String?  @map("password_hash")
+  role      Role      @default(USER)
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  
+  clients   Client[]
+  
+  @@map("users")
+}
+
+model Client {
+  id        String    @id @default(uuid())
+  userId    String    @map("user_id")
+  name      String
+  email     String    @unique
+  cpfCnpj   String    @unique @map("cpf_cnpj")
+  phone     String?
+  address   Json?
+  status    Status    @default(ACTIVE)
+  notes     String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  
+  user            User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  monthlyServices MonthlyService[]
+  annualServices  AnnualService[]
+  irpfEntries     IrpfEntry[]
+  documents       Document[]
+  
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("clients")
+}
+
+model MonthlyService {
+  id              String    @id @default(uuid())
+  clientId        String    @map("client_id")
+  tipoGuia        String?   @map("tipo_guia")
+  regularizacao   String?
+  situacao        String?
+  referenceMonth  String?   @map("reference_month")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  @@index([clientId])
+  @@map("monthly_services")
+}
+
+model AnnualService {
+  id          String    @id @default(uuid())
+  clientId    String    @map("client_id")
+  type        String?
+  observation String?
+  year        Int?
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  @@index([clientId])
+  @@map("annual_services")
+}
+
+model IrpfEntry {
+  id               String    @id @default(uuid())
+  clientId         String?   @map("client_id")
+  sequenceNumber   Int?      @map("sequence_number")
+  name             String
+  cpf              String
+  year             Int?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  
+  client Client? @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  
+  @@index([cpf])
+  @@index([clientId])
+  @@map("irpf_entries")
+}
+
+model Document {
+  id        String   @id @default(uuid())
+  clientId  String   @map("client_id")
+  fileName  String   @map("file_name")
+  fileUrl   String   @map("file_url")
+  fileType  String   @map("file_type")
+  fileSize  Float    @map("file_size")
+  createdAt DateTime @default(now()) @map("created_at")
+  
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  
+  @@index([clientId])
+  @@map("documents")
+}
+
+enum Role {
+  ADMIN
+  USER
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
