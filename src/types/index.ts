@@ -2,7 +2,6 @@ export interface Client {
   id: string
   name: string
   email: string
-  cpf_cnpj?: string
   cpf?: string
   cnpj?: string
   data_nascimento?: string
@@ -88,7 +87,6 @@ export interface CreateClientData {
   email: string
   cpf?: string
   cnpj?: string
-  cpf_cnpj?: string
   phone?: string
   address?: Address
   notes?: string

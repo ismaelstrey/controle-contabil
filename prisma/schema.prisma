@@ -26,8 +26,7 @@ model Client {
   userId    String    @map("user_id")
   name      String
   email     String    @unique
-  /// Campo legado com CPF/CNPJ combinado. Preferir os campos `cpf` ou `cnpj`.
-  cpfCnpj   String    @unique @map("cpf_cnpj")
+  // Campo legado removido: cpf_cnpj
   /// CPF (apenas dígitos, 11 caracteres). Exclusivo com `cnpj`.
   cpf       String?   @unique @db.Char(11) @map("cpf")
   /// Data de nascimento (PF).

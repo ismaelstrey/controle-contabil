@@ -35,7 +35,7 @@ export function ClientForm({ onSuccess, clientId, initialValues }: ClientFormPro
         await updateClient(clientId, { name, email, cpf: cpf || undefined, cnpj: cnpj || undefined, cpf_cnpj: legacy || undefined } as any)
         onSuccess?.()
       } else {
-        await createClient({ name, email, cpf: cpf || undefined, cnpj: cnpj || undefined, cpf_cnpj: legacy || undefined })
+        await createClient({ name, email, cpf: cpf || undefined, cnpj: cnpj || undefined })
         show('Cliente criado!', 'success')
         setName('')
         setEmail('')
@@ -72,10 +72,7 @@ export function ClientForm({ onSuccess, clientId, initialValues }: ClientFormPro
           <Input id="cnpj" value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
         </div>
       </div>
-      <div className="space-y-2">
-        <Label htmlFor="cpf_cnpj">CPF/CNPJ (legado)</Label>
-        <Input id="cpf_cnpj" value={legacy} onChange={(e) => setLegacy(e.target.value)} />
-      </div>
+      {/* Campo legado removido */}
       <Button type="submit" disabled={loading}>{loading ? 'Salvando...' : clientId ? 'Atualizar' : 'Salvar'}</Button>
     </form>
   )

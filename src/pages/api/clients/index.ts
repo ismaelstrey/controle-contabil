@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
+const { digitsOnly, normalizeCpfCnpj } = require('@/lib/doc-validation')
 
 function getSessionId(req: NextApiRequest): string | null {
   const cookie = req.headers.cookie || ''
@@ -26,7 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         clients = clients.filter(c =>
           (c.name || '').toLowerCase().includes(s) ||
           (c.email || '').toLowerCase().includes(s) ||
-          (c.cpfCnpj || '').toLowerCase().includes(s) ||
           (c.cpf || '').toLowerCase().includes(s) ||
           (c.cnpj || '').toLowerCase().includes(s)
         )
@@ -46,33 +46,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         res.status(400).json({ error: 'name e email são obrigatórios' })
         return
       }
-      const digits = (v: any) => String(v || '').replace(/\D/g, '')
-      const cpfDigits = digits(cpf)
-      const cnpjDigits = digits(cnpj)
       let useCpf = false
       let useCnpj = false
       let docDigits = ''
-      if (cpfDigits) { useCpf = true; docDigits = cpfDigits }
-      if (cnpjDigits) { useCnpj = true; docDigits = cnpjDigits }
-      if (!useCpf && !useCnpj) {
-        const legacy = digits(cpf_cnpj)
-        if (legacy.length === 11) { useCpf = true; docDigits = legacy }
-        else if (legacy.length === 14) { useCnpj = true; docDigits = legacy }
-      }
-      if ((useCpf && useCnpj) || (!useCpf && !useCnpj)) {
-        res.status(400).json({ error: 'Informe apenas CPF ou apenas CNPJ' })
-        return
-      }
-      if ((useCpf && docDigits.length !== 11) || (useCnpj && docDigits.length !== 14)) {
-        res.status(400).json({ error: 'Formato inválido para CPF/CNPJ' })
-        return
+      try {
+        const { value, type } = normalizeCpfCnpj(cpf, cnpj)
+        docDigits = value
+        useCpf = type === 'CPF'
+        useCnpj = type === 'CNPJ'
+      } catch (e: any) {
+        // ancora compatibilidade legado opcional
+        const legacy = digitsOnly(cpf_cnpj)
+        const type = legacy.length === 11 ? 'CPF' : legacy.length === 14 ? 'CNPJ' : null
+        if (!type) {
+          res.status(400).json({ error: e?.message || 'Documento inválido' })
+          return
+        }
+        docDigits = legacy
+        useCpf = type === 'CPF'
+        useCnpj = type === 'CNPJ'
       }
       const created = await prisma.client.create({
         data: {
           userId,
           name,
           email,
-          cpfCnpj: docDigits,
           cpf: useCpf ? docDigits : null,
           cnpj: useCnpj ? docDigits : null,
           phone: phone || null,

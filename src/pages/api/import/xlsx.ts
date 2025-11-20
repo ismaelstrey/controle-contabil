@@ -47,7 +47,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           userId,
           name,
           email,
-          cpfCnpj: doc,
           cpf: isCpf ? doc : null,
           cnpj: isCnpj ? doc : null,
           status: 'ACTIVE'

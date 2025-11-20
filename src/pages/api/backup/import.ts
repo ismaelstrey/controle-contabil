@@ -100,7 +100,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const digits = (v: any) => String(v || '').replace(/\D/g, '')
         const cpfDigits = digits(c.cpf)
         const cnpjDigits = digits(c.cnpj)
-        let doc = cpfDigits || cnpjDigits || digits(c.cpfCnpj)
+        let doc = cpfDigits || cnpjDigits
         const isCpf = doc.length === 11
         const isCnpj = doc.length === 14
         await prisma.client.upsert({
@@ -109,7 +109,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             userId: c.userId,
             name: c.name,
             email: c.email,
-            cpfCnpj: doc,
             cpf: isCpf ? doc : null,
             cnpj: isCnpj ? doc : null,
             phone: c.phone ?? null,
@@ -127,7 +126,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             userId: c.userId,
             name: c.name,
             email: c.email,
-            cpfCnpj: doc,
             cpf: isCpf ? doc : null,
             cnpj: isCnpj ? doc : null,
             phone: c.phone ?? null,

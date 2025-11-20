@@ -1,5 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from '@/lib/prisma'
+const { digitsOnly, inferDocType } = require('@/lib/doc-validation')
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const id = String(req.query.id)
@@ -16,9 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (req.method === 'PUT' || req.method === 'PATCH') {
       const { name, email, cpf, cnpj, cpf_cnpj, phone, address, notes, status, dataNascimento, codigoAcesso, senhaGov, codigoRegularize, senhaNfse } = req.body || {}
-      const digits = (v: any) => String(v || '').replace(/\D/g, '')
-      const cpfDigits = digits(cpf)
-      const cnpjDigits = digits(cnpj)
+      const cpfDigits = digitsOnly(cpf)
+      const cnpjDigits = digitsOnly(cnpj)
       let useCpf: boolean | null = null
       let useCnpj: boolean | null = null
       let docDigits = ''
@@ -31,9 +31,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         docDigits = cnpjDigits || docDigits
       }
       if (cpf === undefined && cnpj === undefined && cpf_cnpj !== undefined) {
-        const legacy = digits(cpf_cnpj)
-        if (legacy.length === 11) { useCpf = true; useCnpj = false; docDigits = legacy }
-        else if (legacy.length === 14) { useCpf = false; useCnpj = true; docDigits = legacy }
+        const legacy = digitsOnly(cpf_cnpj)
+        const type = inferDocType(legacy)
+        if (type === 'CPF') { useCpf = true; useCnpj = false; docDigits = legacy }
+        else if (type === 'CNPJ') { useCpf = false; useCnpj = true; docDigits = legacy }
         else { useCpf = false; useCnpj = false }
       }
       if (useCpf === true && useCnpj === true) {
@@ -64,11 +65,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (useCpf === true) {
         data.cpf = docDigits
         data.cnpj = null
-        data.cpfCnpj = docDigits
       } else if (useCnpj === true) {
         data.cnpj = docDigits
         data.cpf = null
-        data.cpfCnpj = docDigits
       }
       const updated = await prisma.client.update({ where: { id }, data })
       res.status(200).json(updated)

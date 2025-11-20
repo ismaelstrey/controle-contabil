@@ -50,7 +50,7 @@ export function ClientList() {
         {clientToEdit && (
           <ClientForm
             clientId={clientToEdit.id}
-            initialValues={{ name: clientToEdit.name, email: clientToEdit.email, cpf_cnpj: clientToEdit.cpf_cnpj }}
+            initialValues={{ name: clientToEdit.name, email: clientToEdit.email, cpf: clientToEdit.cpf, cnpj: clientToEdit.cnpj }}
             onSuccess={() => setEditingId(null)}
           />
         )}
