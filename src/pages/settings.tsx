@@ -3,6 +3,7 @@ import { useRouter } from 'next/router'
 import { DashboardLayout } from '@/components/dashboard-layout'
 import { SettingsForm } from '@/components/settings-form'
 import { useAuth } from '@/hooks/use-auth'
+import { BackupPanel } from '@/components/backup-panel'
 
 export default function SettingsPage() {
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function SettingsPage() {
       <div className="space-y-6">
         <h1 className="text-3xl font-bold">Configurações</h1>
         <SettingsForm />
+        <BackupPanel />
       </div>
     </DashboardLayout>
   )
