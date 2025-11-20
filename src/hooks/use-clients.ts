@@ -23,12 +23,36 @@ export const useClients = (): UseClientsReturn => {
   const queryClient = useQueryClient()
   const { show } = useToastContext()
 
-  const { data: clients = [], isLoading, error } = useQuery({
+  const { data: clients = [], isLoading, error } = useQuery<Client[]>({
     queryKey: CLIENTS_QUERY_KEY,
     queryFn: async () => {
       const res = await fetch('/api/clients')
       if (!res.ok) throw new Error('Falha ao carregar clientes')
-      return await res.json()
+      const raw = await res.json()
+      const mapped: Client[] = Array.isArray(raw) ? raw.map((c: any) => ({
+        id: c.id,
+        name: c.name,
+        email: c.email,
+        cpf_cnpj: c.cpfCnpj || c.cpf || c.cnpj || '',
+        cpf: c.cpf || undefined,
+        cnpj: c.cnpj || undefined,
+        phone: c.phone || undefined,
+        address: c.address || undefined,
+        status: c.status === 'ACTIVE' ? 'active' : 'inactive',
+        notes: c.notes || undefined,
+        monthly_service: undefined,
+        annual_service: undefined,
+        irpf_entry: undefined,
+        created_at: c.createdAt,
+        updated_at: c.updatedAt,
+        user_id: c.userId,
+        data_nascimento: c.dataNascimento || undefined,
+        codigo_acesso: c.codigoAcesso || undefined,
+        senha_gov: c.senhaGov || undefined,
+        codigo_regularize: c.codigoRegularize || undefined,
+        senha_nfse: c.senhaNfse || undefined
+      })) : []
+      return mapped
     },
     staleTime: 5 * 60 * 1000, // 5 minutos
     gcTime: 10 * 60 * 1000, // 10 minutos
@@ -42,10 +66,17 @@ export const useClients = (): UseClientsReturn => {
         body: JSON.stringify({
           name: clientData.name,
           email: clientData.email,
+          cpf: clientData.cpf,
+          cnpj: clientData.cnpj,
           cpf_cnpj: clientData.cpf_cnpj,
           phone: clientData.phone || null,
           address: clientData.address || null,
           notes: clientData.notes || null,
+          dataNascimento: clientData.data_nascimento || null,
+          codigoAcesso: clientData.codigo_acesso || null,
+          senhaGov: clientData.senha_gov || null,
+          codigoRegularize: clientData.codigo_regularize || null,
+          senhaNfse: clientData.senha_nfse || null,
         })
       })
       if (!res.ok) {
@@ -71,10 +102,17 @@ export const useClients = (): UseClientsReturn => {
         body: JSON.stringify({
           name: data.name,
           email: data.email,
+          cpf: (data as any).cpf,
+          cnpj: (data as any).cnpj,
           cpf_cnpj: data.cpf_cnpj,
           phone: data.phone,
           address: data.address,
           notes: data.notes,
+          dataNascimento: (data as any).data_nascimento,
+          codigoAcesso: (data as any).codigo_acesso,
+          senhaGov: (data as any).senha_gov,
+          codigoRegularize: (data as any).codigo_regularize,
+          senhaNfse: (data as any).senha_nfse,
           status: data.status === 'active' ? 'ACTIVE' : data.status === 'inactive' ? 'INACTIVE' : undefined
         })
       })

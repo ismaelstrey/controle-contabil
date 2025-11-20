@@ -26,7 +26,22 @@ model Client {
   userId    String    @map("user_id")
   name      String
   email     String    @unique
+  /// Campo legado com CPF/CNPJ combinado. Preferir os campos `cpf` ou `cnpj`.
   cpfCnpj   String    @unique @map("cpf_cnpj")
+  /// CPF (apenas dígitos, 11 caracteres). Exclusivo com `cnpj`.
+  cpf       String?   @unique @db.Char(11) @map("cpf")
+  /// Data de nascimento (PF).
+  dataNascimento DateTime? @map("data_nascimento")
+  /// Código de acesso (PF) para portais fiscais.
+  codigoAcesso    String?  @map("codigo_acesso")
+  /// Senha GOV (PF) para autenticação em gov.br.
+  senhaGov        String?  @map("senha_gov")
+  /// CNPJ (apenas dígitos, 14 caracteres). Exclusivo com `cpf`.
+  cnpj      String?   @unique @db.Char(14) @map("cnpj")
+  /// Código Regularize (PJ).
+  codigoRegularize String? @map("codigo_regularize")
+  /// Senha NFSe (PJ).
+  senhaNfse        String? @map("senha_nfse")
   phone     String?
   address   Json?
   status    Status    @default(ACTIVE)
@@ -43,6 +58,8 @@ model Client {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+  @@index([cpf])
+  @@index([cnpj])
   @@map("clients")
 }
 

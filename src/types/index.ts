@@ -2,7 +2,14 @@ export interface Client {
   id: string
   name: string
   email: string
-  cpf_cnpj: string
+  cpf_cnpj?: string
+  cpf?: string
+  cnpj?: string
+  data_nascimento?: string
+  codigo_acesso?: string
+  senha_gov?: string
+  codigo_regularize?: string
+  senha_nfse?: string
   phone?: string
   address?: Address
   status: 'active' | 'inactive'
@@ -79,10 +86,17 @@ export interface User {
 export interface CreateClientData {
   name: string
   email: string
-  cpf_cnpj: string
+  cpf?: string
+  cnpj?: string
+  cpf_cnpj?: string
   phone?: string
   address?: Address
   notes?: string
+  data_nascimento?: string
+  codigo_acesso?: string
+  senha_gov?: string
+  codigo_regularize?: string
+  senha_nfse?: string
   monthly_service?: Omit<MonthlyService, 'id' | 'client_id' | 'created_at' | 'updated_at'>
   annual_service?: Omit<AnnualService, 'id' | 'client_id' | 'created_at' | 'updated_at'>
 }

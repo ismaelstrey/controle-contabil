@@ -97,10 +97,49 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
     if (Array.isArray(data.clients)) {
       for (const c of data.clients) {
+        const digits = (v: any) => String(v || '').replace(/\D/g, '')
+        const cpfDigits = digits(c.cpf)
+        const cnpjDigits = digits(c.cnpj)
+        let doc = cpfDigits || cnpjDigits || digits(c.cpfCnpj)
+        const isCpf = doc.length === 11
+        const isCnpj = doc.length === 14
         await prisma.client.upsert({
           where: { id: c.id },
-          update: { userId: c.userId, name: c.name, email: c.email, cpfCnpj: c.cpfCnpj, phone: c.phone ?? null, address: c.address ?? null, status: c.status, notes: c.notes ?? null },
-          create: { id: c.id, userId: c.userId, name: c.name, email: c.email, cpfCnpj: c.cpfCnpj, phone: c.phone ?? null, address: c.address ?? null, status: c.status, notes: c.notes ?? null }
+          update: {
+            userId: c.userId,
+            name: c.name,
+            email: c.email,
+            cpfCnpj: doc,
+            cpf: isCpf ? doc : null,
+            cnpj: isCnpj ? doc : null,
+            phone: c.phone ?? null,
+            address: c.address ?? null,
+            status: c.status,
+            notes: c.notes ?? null,
+            dataNascimento: c.dataNascimento ?? null,
+            codigoAcesso: c.codigoAcesso ?? null,
+            senhaGov: c.senhaGov ?? null,
+            codigoRegularize: c.codigoRegularize ?? null,
+            senhaNfse: c.senhaNfse ?? null
+          },
+          create: {
+            id: c.id,
+            userId: c.userId,
+            name: c.name,
+            email: c.email,
+            cpfCnpj: doc,
+            cpf: isCpf ? doc : null,
+            cnpj: isCnpj ? doc : null,
+            phone: c.phone ?? null,
+            address: c.address ?? null,
+            status: c.status,
+            notes: c.notes ?? null,
+            dataNascimento: c.dataNascimento ?? null,
+            codigoAcesso: c.codigoAcesso ?? null,
+            senhaGov: c.senhaGov ?? null,
+            codigoRegularize: c.codigoRegularize ?? null,
+            senhaNfse: c.senhaNfse ?? null
+          }
         })
       }
     }

@@ -36,15 +36,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const name = String(row.name || row.Cliente || '').trim()
     const emailRaw = String(row.email || '').trim()
     const email = isValidEmail(emailRaw) ? emailRaw : placeholderEmail(name || 'cliente')
-    const cpf_cnpj = cleanCpfCnpj(String(row.cpf_cnpj || row.CPF || row.CNPJ || ''))
-    if (!name || !cpf_cnpj) continue
+    const doc = cleanCpfCnpj(String(row.cpf_cnpj || row.CPF || row.CNPJ || ''))
+    if (!name || !doc) continue
+    const isCpf = doc.length === 11
+    const isCnpj = doc.length === 14
+    if (!isCpf && !isCnpj) continue
     try {
       await prisma.client.create({
         data: {
           userId,
           name,
           email,
-          cpfCnpj: cpf_cnpj,
+          cpfCnpj: doc,
+          cpf: isCpf ? doc : null,
+          cnpj: isCnpj ? doc : null,
           status: 'ACTIVE'
         }
       })

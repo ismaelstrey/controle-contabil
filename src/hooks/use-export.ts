@@ -28,7 +28,7 @@ export const useExport = (): UseExportReturn => {
       const exportData = clients.map(client => ({
         'Nome': client.name,
         'Email': client.email,
-        'CPF/CNPJ': formatCpfCnpj(client.cpf_cnpj),
+        'CPF/CNPJ': formatCpfCnpj(client.cpf_cnpj || client.cpf || client.cnpj || ''),
         'Telefone': client.phone || '',
         'Status': client.status === 'active' ? 'Ativo' : 'Inativo',
         'Endereço': client.address ? formatAddress(client.address) : '',
@@ -135,7 +135,7 @@ export const useExport = (): UseExportReturn => {
                   <tr>
                     <td>${client.name}</td>
                     <td>${client.email}</td>
-                    <td>${formatCpfCnpj(client.cpf_cnpj)}</td>
+                    <td>${formatCpfCnpj(client.cpf_cnpj || client.cpf || client.cnpj || '')}</td>
                     <td>${client.status === 'active' ? 'Ativo' : 'Inativo'}</td>
                     <td>${formatDate(client.created_at)}</td>
                   </tr>
@@ -175,7 +175,7 @@ export const useExport = (): UseExportReturn => {
           reportData = clients.map(client => ({
             nome: client.name,
             email: client.email,
-            cpf_cnpj: formatCpfCnpj(client.cpf_cnpj),
+            cpf_cnpj: formatCpfCnpj(client.cpf_cnpj || client.cpf || client.cnpj || ''),
             status: client.status,
             data_criacao: client.created_at
           }))

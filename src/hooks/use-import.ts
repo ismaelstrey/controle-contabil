@@ -40,7 +40,8 @@ export const useImport = (): UseImportReturn => {
         rowErrors.push('Email inválido')
       }
 
-      if (!row.cpf_cnpj || !isValidCpfCnpj(row.cpf_cnpj)) {
+      const doc = String(row.cpf_cnpj || row.CPF || row.CNPJ || '')
+      if (!doc || !isValidCpfCnpj(doc)) {
         rowErrors.push('CPF/CNPJ inválido')
       }
 
