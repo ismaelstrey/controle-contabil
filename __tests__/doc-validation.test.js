@@ -14,8 +14,7 @@ describe('doc-validation utilities', () => {
 
   test('normalizeCpfCnpj enforces single document', () => {
     const cpf = '123.456.789-00'
-    const cnpj = ''
-    const r1 = normalizeCpfCnpj(cpf, cnpj)
+    const r1 = normalizeCpfCnpj(cpf, '')
     expect(r1.type).toBe('CPF')
     expect(r1.value).toBe('12345678900')
 

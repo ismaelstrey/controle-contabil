@@ -90,6 +90,7 @@ export interface CreateClientData {
   phone?: string
   address?: Address
   notes?: string
+  status?: 'active' | 'inactive'
   data_nascimento?: string
   codigo_acesso?: string
   senha_gov?: string

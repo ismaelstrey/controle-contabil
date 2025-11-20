@@ -75,6 +75,7 @@ export const useClients = (): UseClientsReturn => {
           senhaGov: clientData.senha_gov || null,
           codigoRegularize: clientData.codigo_regularize || null,
           senhaNfse: clientData.senha_nfse || null,
+          status: clientData.status === 'active' ? 'ACTIVE' : clientData.status === 'inactive' ? 'INACTIVE' : 'ACTIVE',
         })
       })
       if (!res.ok) {
